@@ -1,14 +1,15 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { deleteProduct, updateProduct } from "../../redux/ProductSlice";
-import { v4 as uuid } from "uuid";
 
 type Props = {
   product: Product;
   isAdmin?: boolean;
+  onEdit?: (product: Product) => void;
+  setIsEditing?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ProductCard = ({ product, isAdmin }: Props) => {
+const ProductCard = ({ product, isAdmin, onEdit, setIsEditing }: Props) => {
   const dispatch = useDispatch();
 
   const handleDelete = () => {
@@ -17,7 +18,8 @@ const ProductCard = ({ product, isAdmin }: Props) => {
   };
 
   const handleUpdate = () => {
-    console.log("updating product with id:", product.id);
+    setIsEditing?.(true);
+    if (onEdit) onEdit(product);
   };
 
   return (
