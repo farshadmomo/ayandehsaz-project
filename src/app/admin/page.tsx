@@ -1,24 +1,68 @@
 "use client";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { addProduct, updateProduct } from "../../redux/ProductSlice";
+import { useState, useEffect } from "react";
 import { v4 as uuid } from "uuid";
 import AdminList from "./AdminList";
 import Modal from "../../components/Modal";
+import { useProductSocket } from "../../hooks/useProductSocket";
 
 export default function AdminPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const dispatch = useDispatch();
+  const [error, setError] = useState<string | null>(null);
+
+  const { addNewProduct, editProduct } = useProductSocket();
+
+  useEffect(() => {
+    if (error) alert(error);
+  }, [error]);
 
   const handleSubmit = () => {
-    if (editingProduct && isEditing) {
-      dispatch(updateProduct({ ...editingProduct }));
-    } else if (editingProduct && !isEditing) {
-      dispatch(addProduct({ ...editingProduct }));
+    if (!editingProduct) return;
+
+    const validations = [
+      {
+        condition: !editingProduct.name || editingProduct.name.trim() === "",
+        message: "نام محصول نمی‌تواند خالی باشد",
+      },
+      {
+        condition: editingProduct.price <= 0,
+        message: "قیمت محصول باید بیشتر از صفر باشد",
+      },
+      {
+        condition: editingProduct.stock <= 0,
+        message: "موجودی محصول باید بیشتر از صفر باشد",
+      },
+    ];
+
+    for (const { condition, message } of validations) {
+      if (condition) {
+        setError("");
+        setTimeout(() => setError(message), 0);
+        return;
+      }
     }
+
+    setError("");
+
+    if (isEditing) {
+      editProduct(editingProduct);
+    } else {
+      addNewProduct(editingProduct);
+    }
+
     setIsOpen(false);
+  };
+
+  const handleAddClick = () => {
+    setIsOpen(true);
+    setIsEditing(false);
+    setEditingProduct({
+      id: uuid(),
+      name: "",
+      price: 0,
+      stock: 0,
+    });
   };
 
   return (
@@ -26,16 +70,7 @@ export default function AdminPage() {
       <h1 className="text-center text-4xl mt-10">پنل مدیریت</h1>
       <button
         className="bg-blue-500 p-2 rounded mt-6 mr-6"
-        onClick={() => {
-          setIsOpen(true);
-          setIsEditing(false);
-          setEditingProduct({
-            id: uuid(),
-            name: "",
-            price: 0,
-            stock: 0,
-          });
-        }}
+        onClick={handleAddClick}
       >
         افزودن محصول
       </button>
@@ -87,15 +122,13 @@ export default function AdminPage() {
           </label>
           <button
             className="bg-green-500 p-2 rounded mt-4"
-            onClick={() => {
-              setIsOpen(false);
-              handleSubmit();
-            }}
+            onClick={handleSubmit}
           >
-            {editingProduct ? "ذخیره تغییرات" : "افزودن محصول"}
+            {isEditing ? "ذخیره تغییرات" : "افزودن محصول"}
           </button>
         </div>
       </Modal>
+
       <AdminList
         setIsEditing={setIsEditing}
         onEdit={(product) => {

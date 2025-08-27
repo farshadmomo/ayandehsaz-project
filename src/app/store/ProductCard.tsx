@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { deleteProduct, updateProduct } from "../../redux/ProductSlice";
+import { useProductSocket } from "../../hooks/useProductSocket";
 
 type Props = {
   product: Product;
@@ -10,16 +10,17 @@ type Props = {
 };
 
 const ProductCard = ({ product, isAdmin, onEdit, setIsEditing }: Props) => {
-  const dispatch = useDispatch();
+  const { editProduct, removeProduct } = useProductSocket();
 
   const handleDelete = () => {
     console.log("deleting product with id:", product.id);
-    dispatch(deleteProduct(product.id));
+    removeProduct(product.id);
   };
 
   const handleUpdate = () => {
     setIsEditing?.(true);
     if (onEdit) onEdit(product);
+    editProduct(product);
   };
 
   return (
