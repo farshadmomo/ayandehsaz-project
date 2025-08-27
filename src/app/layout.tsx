@@ -1,5 +1,7 @@
+"use client";
 import Navbar from "@/components/Navbar";
 import "./globals.css";
+import { Providers } from "./Providers";
 
 export default function RootLayout({
   children,
@@ -9,8 +11,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-black">
-        <Navbar />
-        {children}
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
       </body>
     </html>
   );

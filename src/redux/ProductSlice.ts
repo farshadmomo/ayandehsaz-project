@@ -1,19 +1,18 @@
-// redux/productSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-type Product = {
-  id: string;
-  name: string;
-  price: number;
-  stock: number;
-};
-
-type ProductState = {
-  items: Product[];
-};
+import { v4 as uuid } from "uuid";
 
 const initialState: ProductState = {
-  items: [],
+  items: [
+    { id: uuid(), name: "موبایل سامسونگ", price: 12000000, stock: 5 },
+    { id: uuid(), name: "لپ‌تاپ لنوو", price: 35000000, stock: 2 },
+    { id: uuid(), name: "هدفون سونی", price: 2500000, stock: 10 },
+    { id: uuid(), name: "موبایل سامسونگ", price: 12000000, stock: 5 },
+    { id: uuid(), name: "لپ‌تاپ لنوو", price: 35000000, stock: 2 },
+    { id: uuid(), name: "هدفون سونی", price: 2500000, stock: 10 },
+    { id: uuid(), name: "موبایل سامسونگ", price: 12000000, stock: 5 },
+    { id: uuid(), name: "لپ‌تاپ لنوو", price: 35000000, stock: 2 },
+    { id: uuid(), name: "هدفون سونی", price: 2500000, stock: 10 },
+  ],
 };
 
 const productSlice = createSlice({
